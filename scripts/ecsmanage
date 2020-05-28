@@ -8,7 +8,7 @@ fi
 
 function usage() {
     echo -n \
-        "Usage: $(basename "$0")
+        "Usage: $(basename "$0") command
 Run a CLI task in ECS Fargate.
 "
 }
@@ -57,7 +57,7 @@ EOF
 }
 
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    if [ "${1:-}" = "--help" ]; then
+    if [ "${1:-}" = "--help" ] || [ "$#" -eq 0 ]; then
         usage
     else
         AWS_VPC_CONFIG=$(get_aws_vpc_config)

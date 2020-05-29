@@ -32,6 +32,8 @@ class Command():
         Run the given command on the latest app CLI task definition and print
         out a URL to view the status.
         """
+        options = vars(self.parser.parse_args())
+
         self.env = options["env"]
         cmd = options["cmd"]
 

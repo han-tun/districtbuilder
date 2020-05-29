@@ -22,7 +22,7 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
             run migration:run
     else
         docker-compose \
-            run --rm server \
+            run --rm ecsmigrate \
             run migration:"${*}"
     fi
 fi

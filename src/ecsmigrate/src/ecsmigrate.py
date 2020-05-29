@@ -16,7 +16,7 @@ class Command():
             default="default",
             help=(
                 "Environment to run the task in, as defined in"
-                "ECSMANAGE_ENVIRONMENTS."
+                "ENVIRONMENTS."
             ),
         )
 
@@ -62,17 +62,17 @@ class Command():
         Parse configuration settings for the app, checking to make sure that
         they're valid.
         """
-        if getattr(settings, "ECSMANAGE_ENVIRONMENTS") is None:
+        if getattr(settings, "ENVIRONMENTS") is None:
             raise Exception(
-                "ECSMANAGE_ENVIRONMENTS was not found in the settings."
+                "ENVIRONMENTS was not found in the settings."
             )
 
-        ecs_configs = settings.ECSMANAGE_ENVIRONMENTS.get(self.env, None)
+        ecs_configs = settings.ENVIRONMENTS.get(self.env, None)
         if ecs_configs is None:
             raise Exception(
                 f'Environment "{self.env}" is not a recognized environment in '
-                "ECSMANAGE_ENVIRONMENTS (environments include: "
-                f"{settings.ECSMANAGE_ENVIRONMENTS.keys()})"
+                "ENVIRONMENTS (environments include: "
+                f"{settings.ENVIRONMENTS.keys()})"
             )
 
         config = {

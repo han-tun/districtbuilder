@@ -1,4 +1,4 @@
-ECSMANAGE_ENVIRONMENTS = {
+ENVIRONMENTS = {
     'default': {
         'TASK_DEFINITION_NAME': 'StagingApp',
         'CLUSTER_NAME': 'ecsStagingCluster',

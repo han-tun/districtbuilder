@@ -77,10 +77,10 @@ services:
         condition: service_healthy
     command: bash
 
-  ecsmanage:
-    image: ecsmanage
+  ecsmigrate:
+    image: ecsmigrate
     build:
-      context: ./src/ecsmanage
+      context: ./src/ecsmigrate
       dockerfile: Dockerfile
     environment:
       - AWS_PROFILE=${AWS_PROFILE:-district-builder}

@@ -76,3 +76,13 @@ services:
       database:
         condition: service_healthy
     command: bash
+
+  ecsmanage:
+    image: ecsmanage
+    build:
+      context: ./src/ecsmanage
+      dockerfile: Dockerfile
+    environment:
+      - AWS_PROFILE=${AWS_PROFILE:-district-builder}
+    volumes:
+      - $HOME/.aws:/root/.aws:ro

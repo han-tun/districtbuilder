@@ -3,9 +3,12 @@ from argparse import ArgumentParser, REMAINDER
 from termcolor import cprint
 import settings
 
-class Command():
+
+class Command:
     def __init__(self):
-        self.parser = ArgumentParser(description='Run a one-off management command on an ECS cluster.')
+        self.parser = ArgumentParser(
+            description="Run a one-off management command on an ECS cluster."
+        )
         self.add_arguments()
 
     def add_arguments(self):
@@ -14,10 +17,7 @@ class Command():
             "--env",
             type=str,
             default="default",
-            help=(
-                "Environment to run the task in, as defined in"
-                "ENVIRONMENTS."
-            ),
+            help="Environment to run the task in, as defined in ENVIRONMENTS.",
         )
 
         self.parser.add_argument(
@@ -57,7 +57,7 @@ class Command():
             f"/clusters/{cluster_name}/tasks/{task_id}/details"  # NOQA
         )
 
-        cprint(f"Task started! View here:\n{url}", 'green')
+        cprint(f"Task started! View here:\n{url}", "green")
 
     def parse_config(self):
         """
@@ -65,9 +65,7 @@ class Command():
         they're valid.
         """
         if getattr(settings, "ENVIRONMENTS") is None:
-            raise Exception(
-                "ENVIRONMENTS was not found in the settings."
-            )
+            raise Exception("ENVIRONMENTS was not found in the settings.")
 
         ecs_configs = settings.ENVIRONMENTS.get(self.env, None)
         if ecs_configs is None:

@@ -18,11 +18,11 @@ if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
         usage
     elif [[ -z "${1}" ]]; then
         docker-compose \
-            run --rm ecsmigrate \
+            run --rm ecs-app-task \
             run migration:run
     else
         docker-compose \
-            run --rm ecsmigrate \
+            run --rm ecs-app-task \
             run migration:"${*}"
     fi
 fi

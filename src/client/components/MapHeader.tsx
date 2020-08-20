@@ -170,7 +170,9 @@ const MapHeader = ({
 }) => {
   const labelOptions = metadata
     ? metadata.demographics.map(val => (
-        <option key={val.id}>{capitalizeFirstLetter(val.id)}</option>
+        <option key={val.id} value={val.id}>
+          {capitalizeFirstLetter(val.id)}
+        </option>
       ))
     : [];
   const geoLevelOptions = metadata

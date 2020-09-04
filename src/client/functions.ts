@@ -1,68 +1,15 @@
-import memoize from "memoizee";
 import { cloneDeep } from "lodash";
 
 import {
-  DemographicCounts,
   DistrictsDefinition,
   MutableGeoUnitCollection,
   GeoLevelHierarchy,
   GeoUnits,
   GeoUnitIndices,
   GeoUnitHierarchy,
-  IStaticMetadata,
   NestedArray
 } from "../shared/entities";
 import { Resource } from "./resource";
-import { getDemographics as getDemographicsBase } from "../shared/functions";
-
-// TODO: merge this function with shared/functions once the ability to import
-// third party dependencies into the shared module is fixed
-export const getDemographics = memoize(getDemographicsBase, {
-  normalizer: args => JSON.stringify([[...args[0]].sort(), args[1]]),
-  primitive: true
-});
-
-/*
- * Return all base indices for this subset of the geounit hierarchy.
- */
-// eslint-disable-next-line
-function accumulateBaseIndices(geoUnitHierarchy: GeoUnitHierarchy): number[] {
-  // eslint-disable-next-line
-  const baseIndices: number[] = [];
-  geoUnitHierarchy.forEach(currentIndices =>
-    // eslint-disable-next-line
-    baseIndices.push(
-      ...(typeof currentIndices === "number"
-        ? [currentIndices]
-        : accumulateBaseIndices(currentIndices))
-    )
-  );
-  return baseIndices;
-}
-
-/*
- * Return all corresponding base indices (i.e. smallest geounit, eg. blocks) for a given geounit.
- */
-function baseIndicesForGeoUnit(
-  geoUnitHierarchy: GeoUnitHierarchy,
-  geoUnitIndices: GeoUnitIndices
-  // eslint-disable-next-line
-): number[] {
-  const [geoUnitIndex, ...remainingGeoUnitIndices] = geoUnitIndices;
-  const indicesForGeoLevel: number | NestedArray<number> = geoUnitHierarchy[geoUnitIndex];
-  // eslint-disable-next-line
-  if (remainingGeoUnitIndices.length) {
-    // Need to recurse to find the geounit in question in the hierarchy
-    return baseIndicesForGeoUnit(indicesForGeoLevel as GeoUnitHierarchy, remainingGeoUnitIndices);
-  }
-  // We've reached the geounit we're after. Now we need to return all the base geounit ids below it
-  // eslint-disable-next-line
-  if (typeof indicesForGeoLevel === "number") {
-    // Must be working with base geounit. Wrap it in an array and return.
-    return [indicesForGeoLevel];
-  }
-  return accumulateBaseIndices(indicesForGeoLevel);
-}
 
 export function areAnyGeoUnitsSelected(geoUnits: GeoUnits) {
   return Object.values(geoUnits).some(geoUnitsForLevel => geoUnitsForLevel.size);

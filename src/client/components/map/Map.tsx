@@ -42,7 +42,6 @@ interface Props {
   readonly project: IProject;
   readonly geojson: DistrictsGeoJSON;
   readonly staticMetadata: IStaticMetadata;
-  readonly staticDemographics: UintArrays;
   readonly staticGeoLevels: UintArrays;
   readonly selectedGeounits: GeoUnits;
   readonly selectedDistrictId: number;
@@ -56,7 +55,6 @@ const DistrictsMap = ({
   project,
   geojson,
   staticMetadata,
-  staticDemographics,
   staticGeoLevels,
   selectedGeounits,
   selectedDistrictId,

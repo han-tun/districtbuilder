@@ -33,7 +33,6 @@ interface StateProps {
   readonly project?: IProject;
   readonly geojson?: DistrictsGeoJSON;
   readonly staticMetadata?: IStaticMetadata;
-  readonly staticDemographics?: UintArrays;
   readonly staticGeoLevels: UintArrays;
   readonly geoUnitHierarchy?: GeoUnitHierarchy;
   readonly districtDrawing: DistrictDrawingState;
@@ -45,7 +44,6 @@ const ProjectScreen = ({
   project,
   geojson,
   staticMetadata,
-  staticDemographics,
   staticGeoLevels,
   geoUnitHierarchy,
   districtDrawing,
@@ -91,7 +89,6 @@ const ProjectScreen = ({
         geojson={geojson}
         isLoading={isLoading}
         staticMetadata={staticMetadata}
-        staticDemographics={staticDemographics}
         selectedDistrictId={districtDrawing.selectedDistrictId}
         selectedGeounits={districtDrawing.selectedGeounits}
         geoUnitHierarchy={geoUnitHierarchy}
@@ -103,7 +100,6 @@ const ProjectScreen = ({
       geojson,
       isLoading,
       staticMetadata,
-      staticDemographics,
       districtDrawing.selectedDistrictId,
       districtDrawing.selectedGeounits,
       geoUnitHierarchy,
@@ -135,12 +131,11 @@ const ProjectScreen = ({
             selectedGeounits={districtDrawing.selectedGeounits}
             advancedEditingEnabled={project?.advancedEditingEnabled}
           />
-          {project && staticMetadata && staticDemographics && staticGeoLevels && geojson ? (
+          {project && staticMetadata && staticGeoLevels && geojson ? (
             <Map
               project={project}
               geojson={geojson}
               staticMetadata={staticMetadata}
-              staticDemographics={staticDemographics}
               staticGeoLevels={staticGeoLevels}
               selectedGeounits={districtDrawing.selectedGeounits}
               selectedDistrictId={districtDrawing.selectedDistrictId}
@@ -162,7 +157,6 @@ function mapStateToProps(state: State): StateProps {
     geojson: destructureResource(state.project.projectData, "geojson"),
     staticMetadata: destructureResource(state.project.staticData, "staticMetadata"),
     staticGeoLevels: destructureResource(state.project.staticData, "staticGeoLevels"),
-    staticDemographics: destructureResource(state.project.staticData, "staticDemographics"),
     geoUnitHierarchy: destructureResource(state.project.staticData, "geoUnitHierarchy"),
     districtDrawing: state.project,
     isLoading:

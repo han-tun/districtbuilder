@@ -91,6 +91,7 @@ const ProjectScreen = ({
         staticMetadata={staticMetadata}
         selectedDistrictId={districtDrawing.selectedDistrictId}
         selectedGeounits={districtDrawing.selectedGeounits}
+        highlightedGeounits={districtDrawing.highlightedGeounits}
         geoUnitHierarchy={geoUnitHierarchy}
         lockedDistricts={districtDrawing.lockedDistricts}
       />
@@ -102,6 +103,7 @@ const ProjectScreen = ({
       staticMetadata,
       districtDrawing.selectedDistrictId,
       districtDrawing.selectedGeounits,
+      districtDrawing.highlightedGeounits,
       geoUnitHierarchy,
       districtDrawing.lockedDistricts
     ]

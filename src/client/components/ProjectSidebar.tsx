@@ -18,6 +18,7 @@ import {
   allGeoUnitIndices,
   areAnyGeoUnitsSelected,
   assertNever,
+  combineGeoUnits,
   getDemographics,
   getTotalSelectedDemographics
 } from "../functions";
@@ -127,6 +128,7 @@ const ProjectSidebar = ({
   staticDemographics,
   selectedDistrictId,
   selectedGeounits,
+  highlightedGeounits,
   geoUnitHierarchy,
   lockedDistricts
 }: {
@@ -136,6 +138,7 @@ const ProjectSidebar = ({
   readonly staticDemographics?: UintArrays;
   readonly selectedDistrictId: number;
   readonly selectedGeounits: GeoUnits;
+  readonly highlightedGeounits: GeoUnits;
   readonly geoUnitHierarchy?: GeoUnitHierarchy;
   readonly lockedDistricts: LockedDistricts;
 } & LoadingProps) => {
@@ -184,6 +187,7 @@ const ProjectSidebar = ({
                 selectedDistrictId={selectedDistrictId}
                 selectedGeounits={selectedGeounits}
                 geoUnitHierarchy={geoUnitHierarchy}
+                highlightedGeounits={highlightedGeounits}
                 lockedDistricts={lockedDistricts}
               />
             )}
@@ -469,6 +473,7 @@ interface SidebarRowsProps {
   readonly selectedDistrictId: number;
   readonly selectedGeounits: GeoUnits;
   readonly geoUnitHierarchy: GeoUnitHierarchy;
+  readonly highlightedGeounits: GeoUnits;
   readonly lockedDistricts: LockedDistricts;
 }
 
@@ -479,15 +484,17 @@ const SidebarRows = ({
   staticDemographics,
   selectedDistrictId,
   selectedGeounits,
+  highlightedGeounits,
   geoUnitHierarchy,
   lockedDistricts
 }: SidebarRowsProps) => {
+  const combinedSelection = combineGeoUnits(selectedGeounits, highlightedGeounits);
   // Aggregated demographics for the geounit selection
   const totalSelectedDemographics = getTotalSelectedDemographics(
     staticMetadata,
     geoUnitHierarchy,
     staticDemographics,
-    selectedGeounits
+    combinedSelection
   );
 
   // The demographic composition of the selection for each saved district
@@ -495,7 +502,7 @@ const SidebarRows = ({
     project,
     staticMetadata,
     staticDemographics,
-    selectedGeounits,
+    combinedSelection,
     geoUnitHierarchy
   );
 

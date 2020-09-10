@@ -77,6 +77,7 @@ const ProjectScreen = ({
         staticDemographics={staticDemographics}
         selectedDistrictId={districtDrawing.selectedDistrictId}
         selectedGeounits={districtDrawing.selectedGeounits}
+        highlightedGeounits={districtDrawing.highlightedGeounits}
         geoUnitHierarchy={geoUnitHierarchy}
         lockedDistricts={districtDrawing.lockedDistricts}
       />
@@ -89,6 +90,7 @@ const ProjectScreen = ({
       staticDemographics,
       districtDrawing.selectedDistrictId,
       districtDrawing.selectedGeounits,
+      districtDrawing.highlightedGeounits,
       geoUnitHierarchy,
       districtDrawing.lockedDistricts
     ]

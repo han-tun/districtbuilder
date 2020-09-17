@@ -13,8 +13,6 @@ import { State } from "../../reducers";
 import DemographicsTooltip from "../DemographicsTooltip";
 import { levelToLineLayerId, levelToSelectionLayerId } from ".";
 
-const getDemographics = memoize(getTotalSelectedDemographics);
-
 const X_BUFFER = 300;
 const Y_BUFFER = 300;
 
@@ -209,7 +207,7 @@ const MapTooltip = ({
         style={{ transform: `translate3d(${x}px, ${y}px, 0)` }}
         sx={{ ...style.tooltip }}
       >
-        {heading && (
+        {data.heading && (
           <Heading
             sx={{
               fontSize: 1,

@@ -344,7 +344,6 @@ const DistrictsMap = ({
     selectionTool,
     selectedGeolevel,
     staticMetadata,
-    staticDemographics,
     staticGeoLevels,
     project,
     lockedDistricts

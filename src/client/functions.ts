@@ -23,31 +23,6 @@ export function allGeoUnitIds(geoUnits: GeoUnits) {
   return Object.values(geoUnits).flatMap(geoUnitForLevel => Array.from(geoUnitForLevel.keys()));
 }
 
-// Aggregate all demographics that are included in the selection
-function getTotalSelectedDemographicsBase(
-  staticMetadata: IStaticMetadata,
-  geoUnitHierarchy: GeoUnitHierarchy,
-  staticDemographics: ReadonlyArray<Uint8Array | Uint16Array | Uint32Array>,
-  selectedGeounits: GeoUnits
-): DemographicCounts {
-  // Build up set of blocks ids corresponding to selected geounits
-  // eslint-disable-next-line
-  const selectedBaseIndices: Set<number> = new Set();
-  allGeoUnitIndices(selectedGeounits).forEach(geoUnitIndices =>
-    baseIndicesForGeoUnit(geoUnitHierarchy, geoUnitIndices).forEach(index =>
-      // eslint-disable-next-line
-      selectedBaseIndices.add(index)
-    )
-  );
-  // Aggregate all counts for selected blocks
-  return getDemographics(selectedBaseIndices, staticMetadata, staticDemographics);
-}
-
-export const getTotalSelectedDemographics = memoize(getTotalSelectedDemographicsBase, {
-  normalizer: args => JSON.stringify([args[0], [...allGeoUnitIndices(args[3])].sort()]),
-  primitive: true
-});
-
 export function combineGeoUnits(a: GeoUnits, b: GeoUnits): GeoUnits {
   const geoLevels = [...new Set([...Object.keys(a), ...Object.keys(b)])];
   return Object.fromEntries(

@@ -1,4 +1,5 @@
 import throttle from "lodash/throttle";
+import { isEqual } from "lodash";
 import MapboxGL from "mapbox-gl";
 import store from "../../store";
 import {
@@ -113,6 +114,13 @@ const RectangleSelectionTool: ISelectionTool = {
       /* eslint-enable */
 
       const features = getFeaturesInBoundingBox([start, current]);
+
+      // Short circuit if the features are exactly the same as the last time
+      // eslint-disable-next-line
+      if (isEqual(prevFeatures, features)) {
+        return;
+      }
+
       const geoUnits = featuresToUnlockedGeoUnits(
         features,
         staticMetadata,

@@ -49,7 +49,7 @@ export const getSavedDistrictSelectedDemographics = memoize(
     );
   },
   {
-    normalizer: args => stringify([args[1], args[2]], { replacer }),
+    normalizer: args => stringify([args[0], args[2]], { replacer }),
     primitive: true
   }
 );

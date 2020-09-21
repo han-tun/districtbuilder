@@ -1,6 +1,7 @@
 /** @jsx jsx */
-import React, { useEffect, useState, Fragment } from "react";
+import React, { memo, useEffect, useState, Fragment } from "react";
 import { Box, Button, Flex, Heading, jsx, Spinner, Styled, ThemeUIStyleObject } from "theme-ui";
+import { isEqual } from "lodash";
 
 import {
   CompactnessScore,
@@ -506,4 +507,4 @@ const SidebarRows = ({
   );
 };
 
-export default ProjectSidebar;
+export default memo(ProjectSidebar, isEqual);

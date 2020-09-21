@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 import { Redirect, useParams } from "react-router-dom";
 import { Flex, jsx, Spinner } from "theme-ui";
@@ -82,33 +82,6 @@ const ProjectScreen = ({
     projectId && store.dispatch(projectDataFetch(projectId));
   }, [projectId]);
 
-  const sidebar = useMemo(
-    () => (
-      <ProjectSidebar
-        project={project}
-        geojson={geojson}
-        isLoading={isLoading}
-        staticMetadata={staticMetadata}
-        selectedDistrictId={districtDrawing.selectedDistrictId}
-        selectedGeounits={districtDrawing.selectedGeounits}
-        highlightedGeounits={districtDrawing.highlightedGeounits}
-        geoUnitHierarchy={geoUnitHierarchy}
-        lockedDistricts={districtDrawing.lockedDistricts}
-      />
-    ),
-    [
-      project,
-      geojson,
-      isLoading,
-      staticMetadata,
-      districtDrawing.selectedDistrictId,
-      districtDrawing.selectedGeounits,
-      districtDrawing.highlightedGeounits,
-      geoUnitHierarchy,
-      districtDrawing.lockedDistricts
-    ]
-  );
-
   return "isPending" in user ? (
     <CenteredContent>
       <Flex sx={{ justifyContent: "center" }}>
@@ -122,7 +95,17 @@ const ProjectScreen = ({
       <Toast />
       <ProjectHeader project={project} />
       <Flex sx={{ flex: 1, overflowY: "auto" }}>
-        {sidebar}
+        <ProjectSidebar
+          project={project}
+          geojson={geojson}
+          isLoading={isLoading}
+          staticMetadata={staticMetadata}
+          selectedDistrictId={districtDrawing.selectedDistrictId}
+          selectedGeounits={districtDrawing.selectedGeounits}
+          highlightedGeounits={districtDrawing.highlightedGeounits}
+          geoUnitHierarchy={geoUnitHierarchy}
+          lockedDistricts={districtDrawing.lockedDistricts}
+        />
         <Flex sx={{ flexDirection: "column", flex: 1, background: "#fff" }}>
           <MapHeader
             label={label}

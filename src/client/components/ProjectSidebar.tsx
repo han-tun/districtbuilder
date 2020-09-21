@@ -296,26 +296,27 @@ const SidebarRow = memo(
     readonly districtId: number;
     readonly isDistrictLocked?: boolean;
   }) => {
+    // eslint-disable-next-line
+    // Not ready to be displayed yet if no population difference, so short circuit
+    if (selectedPopulationDifference === undefined) {
+      return null;
+    }
+
     const [isHovered, setHover] = useState(false);
 
     const showPopulationChange = selectedPopulationDifference !== 0;
-    const textColor =
-      selectedPopulationDifference && showPopulationChange
-        ? selectedPopulationDifference > 0
-          ? positiveChangeColor
-          : negativeChangeColor
-        : "inherit";
+    const textColor = showPopulationChange
+      ? selectedPopulationDifference > 0
+        ? positiveChangeColor
+        : negativeChangeColor
+      : "inherit";
     // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
     const intermediatePopulation = district.properties.population + selectedPopulationDifference;
-    const intermediateDeviation =
-      selectedPopulationDifference && deviation + selectedPopulationDifference;
+    const intermediateDeviation = deviation + selectedPopulationDifference;
     const populationDisplay = intermediatePopulation.toLocaleString();
-    const deviationDisplay =
-      intermediateDeviation !== undefined
-        ? `${intermediateDeviation > 0 ? "+" : ""}${Math.round(
-            intermediateDeviation
-          ).toLocaleString()}`
-        : BLANK_VALUE;
+    const deviationDisplay = `${intermediateDeviation > 0 ? "+" : ""}${Math.round(
+      intermediateDeviation
+    ).toLocaleString()}`;
     const compactnessDisplay =
       districtId === 0 ? (
         <span sx={style.blankValue}>{BLANK_VALUE}</span>
@@ -493,19 +494,20 @@ const SidebarRows = memo(
               ? -1 * selectedPopulation
               : undefined;
 
+          // The population goal for the unassigned district is 0,
+          // so it's deviation is equal to its population
+          const deviation =
+            districtId === 0
+              ? feature.properties.population
+              : feature.properties.population - averagePopulation;
+
           return (
             <SidebarRow
               district={feature}
               selected={selected}
               selectedPopulationDifference={selectedPopulationDifference}
               demographics={demographics}
-              deviation={
-                // The population goal for the unassigned district is 0,
-                // so it's deviation is equal to its population
-                districtId === 0
-                  ? feature.properties.population
-                  : feature.properties.population - averagePopulation
-              }
+              deviation={deviation}
               key={districtId}
               isDistrictLocked={lockedDistricts.has(districtId)}
               districtId={districtId}

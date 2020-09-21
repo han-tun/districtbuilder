@@ -420,99 +420,102 @@ interface SidebarRowsProps {
   readonly lockedDistricts: LockedDistricts;
 }
 
-const SidebarRows = ({
-  project,
-  geojson,
-  staticMetadata,
-  selectedDistrictId,
-  selectedGeounits,
-  highlightedGeounits,
-  lockedDistricts
-}: SidebarRowsProps) => {
-  const [totalSelectedDemographics, setTotalSelectDemographics] = useState<
-    DemographicCounts | undefined
-  >(undefined);
-  const [savedDistrictSelectedDemographics, setSavedDistrictSelectedDemographics] = useState<
-    readonly DemographicCounts[] | undefined
-  >(undefined);
-  useEffect(() => {
-    // eslint-disable-next-line
-    let outdated = false;
+const SidebarRows = memo(
+  ({
+    project,
+    geojson,
+    staticMetadata,
+    selectedDistrictId,
+    selectedGeounits,
+    highlightedGeounits,
+    lockedDistricts
+  }: SidebarRowsProps) => {
+    const [totalSelectedDemographics, setTotalSelectDemographics] = useState<
+      DemographicCounts | undefined
+    >(undefined);
+    const [savedDistrictSelectedDemographics, setSavedDistrictSelectedDemographics] = useState<
+      readonly DemographicCounts[] | undefined
+    >(undefined);
+    useEffect(() => {
+      // eslint-disable-next-line
+      let outdated = false;
 
-    async function getData() {
-      // Combine selected and highlighted to show calculations in real time
-      const combinedSelection = mergeGeoUnits(selectedGeounits, highlightedGeounits);
+      async function getData() {
+        // Combine selected and highlighted to show calculations in real time
+        const combinedSelection = mergeGeoUnits(selectedGeounits, highlightedGeounits);
 
-      // Aggregated demographics for the geounit selection
-      const selectedTotals = await getTotalSelectedDemographics(
-        staticMetadata,
-        project.regionConfig.s3URI,
-        combinedSelection
-      );
-      // The demographic composition of the selection for each saved district
-      const districtTotals = await getSavedDistrictSelectedDemographics(
-        project,
-        staticMetadata,
-        combinedSelection
-      );
-
-      // Don't overwrite current results with outdated ones
-      !outdated && setTotalSelectDemographics(selectedTotals);
-      !outdated && setSavedDistrictSelectedDemographics(districtTotals);
-    }
-    void getData();
-
-    return () => {
-      outdated = true;
-    };
-  }, [project, staticMetadata, selectedGeounits, highlightedGeounits]);
-
-  // The target population is based on the average population of all districts,
-  // not including the unassigned district, so we use the number of districts,
-  // rather than the district feature count (which includes the unassigned district)
-  const averagePopulation =
-    geojson.features.reduce(
-      (population, feature) => population + feature.properties.population,
-      0
-    ) / project.numberOfDistricts;
-
-  return (
-    <React.Fragment>
-      {geojson.features.map(feature => {
-        const districtId = typeof feature.id === "number" ? feature.id : 0;
-        const selected = districtId === selectedDistrictId;
-        const demographics = feature.properties;
-        const selectedPopulation = savedDistrictSelectedDemographics
-          ? savedDistrictSelectedDemographics[districtId].population
-          : undefined;
-        const selectedPopulationDifference =
-          selectedPopulation !== undefined && totalSelectedDemographics !== undefined && selected
-            ? totalSelectedDemographics.population - selectedPopulation
-            : selectedPopulation !== undefined
-            ? -1 * selectedPopulation
-            : undefined;
-
-        return (
-          <SidebarRow
-            district={feature}
-            selected={selected}
-            selectedPopulationDifference={selectedPopulationDifference}
-            demographics={demographics}
-            deviation={
-              // The population goal for the unassigned district is 0,
-              // so it's deviation is equal to its population
-              districtId === 0
-                ? feature.properties.population
-                : feature.properties.population - averagePopulation
-            }
-            key={districtId}
-            isDistrictLocked={lockedDistricts.has(districtId)}
-            districtId={districtId}
-          />
+        // Aggregated demographics for the geounit selection
+        const selectedTotals = await getTotalSelectedDemographics(
+          staticMetadata,
+          project.regionConfig.s3URI,
+          combinedSelection
         );
-      })}
-    </React.Fragment>
-  );
-};
+        // The demographic composition of the selection for each saved district
+        const districtTotals = await getSavedDistrictSelectedDemographics(
+          project,
+          staticMetadata,
+          combinedSelection
+        );
+
+        // Don't overwrite current results with outdated ones
+        !outdated && setTotalSelectDemographics(selectedTotals);
+        !outdated && setSavedDistrictSelectedDemographics(districtTotals);
+      }
+      void getData();
+
+      return () => {
+        outdated = true;
+      };
+    }, [project, staticMetadata, selectedGeounits, highlightedGeounits]);
+
+    // The target population is based on the average population of all districts,
+    // not including the unassigned district, so we use the number of districts,
+    // rather than the district feature count (which includes the unassigned district)
+    const averagePopulation =
+      geojson.features.reduce(
+        (population, feature) => population + feature.properties.population,
+        0
+      ) / project.numberOfDistricts;
+
+    return (
+      <React.Fragment>
+        {geojson.features.map(feature => {
+          const districtId = typeof feature.id === "number" ? feature.id : 0;
+          const selected = districtId === selectedDistrictId;
+          const demographics = feature.properties;
+          const selectedPopulation = savedDistrictSelectedDemographics
+            ? savedDistrictSelectedDemographics[districtId].population
+            : undefined;
+          const selectedPopulationDifference =
+            selectedPopulation !== undefined && totalSelectedDemographics !== undefined && selected
+              ? totalSelectedDemographics.population - selectedPopulation
+              : selectedPopulation !== undefined
+              ? -1 * selectedPopulation
+              : undefined;
+
+          return (
+            <SidebarRow
+              district={feature}
+              selected={selected}
+              selectedPopulationDifference={selectedPopulationDifference}
+              demographics={demographics}
+              deviation={
+                // The population goal for the unassigned district is 0,
+                // so it's deviation is equal to its population
+                districtId === 0
+                  ? feature.properties.population
+                  : feature.properties.population - averagePopulation
+              }
+              key={districtId}
+              isDistrictLocked={lockedDistricts.has(districtId)}
+              districtId={districtId}
+            />
+          );
+        })}
+      </React.Fragment>
+    );
+  },
+  isEqual
+);
 
 export default memo(ProjectSidebar, isEqual);

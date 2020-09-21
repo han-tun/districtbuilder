@@ -23,15 +23,6 @@ export function allGeoUnitIds(geoUnits: GeoUnits) {
   return Object.values(geoUnits).flatMap(geoUnitForLevel => Array.from(geoUnitForLevel.keys()));
 }
 
-export function combineGeoUnits(a: GeoUnits, b: GeoUnits): GeoUnits {
-  const geoLevels = [...new Set([...Object.keys(a), ...Object.keys(b)])];
-  return Object.fromEntries(
-    geoLevels.map(geoLevelId => {
-      return [geoLevelId, new Map([...(a[geoLevelId] || []), ...(b[geoLevelId] || [])])];
-    })
-  );
-}
-
 /*
  * Assign nested geounit to district.
  *

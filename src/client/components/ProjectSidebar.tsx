@@ -13,7 +13,7 @@ import {
   LockedDistricts
 } from "../../shared/entities";
 import { DistrictGeoJSON, DistrictsGeoJSON } from "../types";
-import { areAnyGeoUnitsSelected, assertNever, combineGeoUnits } from "../functions";
+import { areAnyGeoUnitsSelected, assertNever, mergeGeoUnits } from "../functions";
 import {
   getSavedDistrictSelectedDemographics,
   getTotalSelectedDemographics
@@ -434,7 +434,9 @@ const SidebarRows = ({
     let outdated = false;
 
     async function getData() {
-      const combinedSelection = combineGeoUnits(selectedGeounits, highlightedGeounits);
+      // Combine selected and highlighted to show calculations in real time
+      const combinedSelection = mergeGeoUnits(selectedGeounits, highlightedGeounits);
+
       // Aggregated demographics for the geounit selection
       const selectedTotals = await getTotalSelectedDemographics(
         staticMetadata,

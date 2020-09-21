@@ -296,8 +296,8 @@ const SidebarRow = memo(
     readonly districtId: number;
     readonly isDistrictLocked?: boolean;
   }) => {
-    // eslint-disable-next-line
     // Not ready to be displayed yet if no population difference, so short circuit
+    // eslint-disable-next-line
     if (selectedPopulationDifference === undefined) {
       return null;
     }

@@ -2,6 +2,7 @@
 import React, { memo, useEffect, useState, Fragment } from "react";
 import { Box, Button, Flex, Heading, jsx, Spinner, Styled, ThemeUIStyleObject } from "theme-ui";
 import { isEqual } from "lodash";
+import debounceRender from "react-debounce-rendering";
 
 import {
   CompactnessScore,
@@ -278,137 +279,141 @@ function getCompactnessDisplay(compactness: CompactnessScore) {
   );
 }
 
-const SidebarRow = memo(
-  ({
-    district,
-    selected,
-    selectedPopulationDifference,
-    demographics,
-    deviation,
-    districtId,
-    isDistrictLocked
-  }: {
-    readonly district: DistrictGeoJSON;
-    readonly selected: boolean;
-    readonly selectedPopulationDifference?: number;
-    readonly demographics: { readonly [id: string]: number };
-    readonly deviation: number;
-    readonly districtId: number;
-    readonly isDistrictLocked?: boolean;
-  }) => {
-    // Not ready to be displayed yet if no population difference, so short circuit
-    // eslint-disable-next-line
-    if (selectedPopulationDifference === undefined) {
-      return null;
-    }
+const SidebarRow = debounceRender(
+  memo(
+    ({
+      district,
+      selected,
+      selectedPopulationDifference,
+      demographics,
+      deviation,
+      districtId,
+      isDistrictLocked
+    }: {
+      readonly district: DistrictGeoJSON;
+      readonly selected: boolean;
+      readonly selectedPopulationDifference?: number;
+      readonly demographics: { readonly [id: string]: number };
+      readonly deviation: number;
+      readonly districtId: number;
+      readonly isDistrictLocked?: boolean;
+    }) => {
+      // Not ready to be displayed yet if no population difference, so short circuit
+      // eslint-disable-next-line
+      if (selectedPopulationDifference === undefined) {
+        return null;
+      }
 
-    const [isHovered, setHover] = useState(false);
+      const [isHovered, setHover] = useState(false);
 
-    const showPopulationChange = selectedPopulationDifference !== 0;
-    const textColor = showPopulationChange
-      ? selectedPopulationDifference > 0
-        ? positiveChangeColor
-        : negativeChangeColor
-      : "inherit";
-    // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
-    const intermediatePopulation = district.properties.population + selectedPopulationDifference;
-    const intermediateDeviation = deviation + selectedPopulationDifference;
-    const populationDisplay = intermediatePopulation.toLocaleString();
-    const deviationDisplay = `${intermediateDeviation > 0 ? "+" : ""}${Math.round(
-      intermediateDeviation
-    ).toLocaleString()}`;
-    const compactnessDisplay =
-      districtId === 0 ? (
-        <span sx={style.blankValue}>{BLANK_VALUE}</span>
-      ) : (
-        getCompactnessDisplay(district.properties.compactness)
-      );
-    const toggleHover = () => setHover(!isHovered);
-    const toggleLocked = (e: React.MouseEvent) => {
-      e.stopPropagation();
-      store.dispatch(toggleDistrictLocked(districtId));
-    };
-    return (
-      <Styled.tr
-        sx={{ bg: selected ? selectedDistrictColor : "inherit", cursor: "pointer" }}
-        onClick={() => {
-          store.dispatch(setSelectedDistrictId(district.id as number));
-        }}
-        onMouseOver={toggleHover}
-        onMouseOut={toggleHover}
-      >
-        <Styled.td sx={style.td}>
-          <Flex sx={{ alignItems: "center" }}>
-            {district.id ? (
-              <Fragment>
-                <div
-                  sx={{ ...style.districtColor, ...{ bg: getDistrictColor(district.id) } }}
-                ></div>
-                <span>{district.id}</span>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <div sx={{ ...style.districtColor, ...style.unassignedColor }}></div>
-                <span>∅</span>
-              </Fragment>
-            )}
-          </Flex>
-        </Styled.td>
-        <Styled.td sx={{ ...style.td, ...style.number, ...{ color: textColor } }}>
-          {populationDisplay}
-        </Styled.td>
-        <Styled.td sx={{ ...style.td, ...style.number, ...{ color: textColor } }}>
-          {deviationDisplay}
-        </Styled.td>
-        <Styled.td sx={style.td}>
-          <Tooltip
-            placement="top-start"
-            content={
-              demographics.population > 0 ? (
-                <DemographicsTooltip demographics={demographics} />
+      const showPopulationChange = selectedPopulationDifference !== 0;
+      const textColor = showPopulationChange
+        ? selectedPopulationDifference > 0
+          ? positiveChangeColor
+          : negativeChangeColor
+        : "inherit";
+      // eslint-disable-next-line @typescript-eslint/restrict-plus-operands
+      const intermediatePopulation = district.properties.population + selectedPopulationDifference;
+      const intermediateDeviation = deviation + selectedPopulationDifference;
+      const populationDisplay = intermediatePopulation.toLocaleString();
+      const deviationDisplay = `${intermediateDeviation > 0 ? "+" : ""}${Math.round(
+        intermediateDeviation
+      ).toLocaleString()}`;
+      const compactnessDisplay =
+        districtId === 0 ? (
+          <span sx={style.blankValue}>{BLANK_VALUE}</span>
+        ) : (
+          getCompactnessDisplay(district.properties.compactness)
+        );
+      const toggleHover = () => setHover(!isHovered);
+      const toggleLocked = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        store.dispatch(toggleDistrictLocked(districtId));
+      };
+      return (
+        <Styled.tr
+          sx={{ bg: selected ? selectedDistrictColor : "inherit", cursor: "pointer" }}
+          onClick={() => {
+            store.dispatch(setSelectedDistrictId(district.id as number));
+          }}
+          onMouseOver={toggleHover}
+          onMouseOut={toggleHover}
+        >
+          <Styled.td sx={style.td}>
+            <Flex sx={{ alignItems: "center" }}>
+              {district.id ? (
+                <Fragment>
+                  <div
+                    sx={{ ...style.districtColor, ...{ bg: getDistrictColor(district.id) } }}
+                  ></div>
+                  <span>{district.id}</span>
+                </Fragment>
               ) : (
-                <em>
-                  <strong>Empty district.</strong> Add people to this district to view the race
-                  chart
-                </em>
-              )
-            }
-          >
-            <span>
-              <DemographicsChart demographics={demographics} />
-            </span>
-          </Tooltip>
-        </Styled.td>
-        <Styled.td sx={{ ...style.td, ...style.number }}>{compactnessDisplay}</Styled.td>
-        <Styled.td>
-          {isDistrictLocked ? (
+                <Fragment>
+                  <div sx={{ ...style.districtColor, ...style.unassignedColor }}></div>
+                  <span>∅</span>
+                </Fragment>
+              )}
+            </Flex>
+          </Styled.td>
+          <Styled.td sx={{ ...style.td, ...style.number, ...{ color: textColor } }}>
+            {populationDisplay}
+          </Styled.td>
+          <Styled.td sx={{ ...style.td, ...style.number, ...{ color: textColor } }}>
+            {deviationDisplay}
+          </Styled.td>
+          <Styled.td sx={style.td}>
             <Tooltip
+              placement="top-start"
               content={
-                <span>
-                  <strong>Locked.</strong> Areas from this district cannot be selected
-                </span>
+                demographics.population > 0 ? (
+                  <DemographicsTooltip demographics={demographics} />
+                ) : (
+                  <em>
+                    <strong>Empty district.</strong> Add people to this district to view the race
+                    chart
+                  </em>
+                )
               }
             >
-              <span onClick={toggleLocked} sx={{ display: "inline-block", lineHeight: "0" }}>
-                <Icon name="lock-locked" color="#131f28" size={0.75} />
+              <span>
+                <DemographicsChart demographics={demographics} />
               </span>
             </Tooltip>
-          ) : (
-            <Tooltip content="Lock this district">
-              <span
-                style={{ visibility: isHovered ? "visible" : "hidden" }}
-                onClick={toggleLocked}
-                sx={{ display: "inline-block", lineHeight: "0" }}
+          </Styled.td>
+          <Styled.td sx={{ ...style.td, ...style.number }}>{compactnessDisplay}</Styled.td>
+          <Styled.td>
+            {isDistrictLocked ? (
+              <Tooltip
+                content={
+                  <span>
+                    <strong>Locked.</strong> Areas from this district cannot be selected
+                  </span>
+                }
               >
-                <Icon name="lock-unlocked" size={0.75} />
-              </span>
-            </Tooltip>
-          )}
-        </Styled.td>
-      </Styled.tr>
-    );
-  },
-  isEqual
+                <span onClick={toggleLocked} sx={{ display: "inline-block", lineHeight: "0" }}>
+                  <Icon name="lock-locked" color="#131f28" size={0.75} />
+                </span>
+              </Tooltip>
+            ) : (
+              <Tooltip content="Lock this district">
+                <span
+                  style={{ visibility: isHovered ? "visible" : "hidden" }}
+                  onClick={toggleLocked}
+                  sx={{ display: "inline-block", lineHeight: "0" }}
+                >
+                  <Icon name="lock-unlocked" size={0.75} />
+                </span>
+              </Tooltip>
+            )}
+          </Styled.td>
+        </Styled.tr>
+      );
+    },
+    isEqual
+  ),
+  100,
+  { maxWait: 300 }
 );
 
 interface SidebarRowsProps {

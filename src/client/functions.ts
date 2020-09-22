@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { cloneDeep } from "lodash";
 
 import {
@@ -140,3 +141,7 @@ export function mergeGeoUnits(a: GeoUnits, b: GeoUnits): GeoUnits {
     })
   );
 }
+
+export const showActionFailedToast = () => toast.error("Something went wrong, please try again.");
+export const showResourceFailedToast = () =>
+  toast.error("Something went wrong, please refresh the page.");

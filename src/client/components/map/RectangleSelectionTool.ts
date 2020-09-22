@@ -115,9 +115,11 @@ const RectangleSelectionTool: ISelectionTool = {
 
       const features = getFeaturesInBoundingBox([start, current]);
 
-      // Short circuit if the features are exactly the same as the last time
+      // Short circuit if the features are exactly the same as the last time.
+      // Don't do this for single features though, because we want to recalculate
+      // on the following condition: selecting a single feature, then canceling, then selecting again.
       // eslint-disable-next-line
-      if (isEqual(prevFeatures, features)) {
+      if (features.length > 1 && isEqual(prevFeatures, features)) {
         return;
       }
 

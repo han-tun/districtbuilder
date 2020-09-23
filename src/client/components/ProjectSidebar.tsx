@@ -1,7 +1,17 @@
 /** @jsx jsx */
-import React, { memo, useEffect, useState, Fragment } from "react";
-import { Box, Button, Flex, Heading, jsx, Spinner, Styled, ThemeUIStyleObject } from "theme-ui";
 import { isEqual } from "lodash";
+import React, { memo, useEffect, useState, Fragment } from "react";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  jsx,
+  Spinner,
+  Styled,
+  Text,
+  ThemeUIStyleObject
+} from "theme-ui";
 
 import {
   CompactnessScore,
@@ -83,6 +93,7 @@ const style: ThemeUIStyleObject = {
     position: "sticky",
     top: "0",
     zIndex: 2,
+    userSelect: "none",
     "&::after": {
       height: "1px",
       content: "''",
@@ -154,7 +165,7 @@ const ProjectSidebar = ({
           <thead>
             <Styled.tr>
               <Styled.th sx={style.th}>
-                <Tooltip content="Unique number for this district">
+                <Tooltip content="District number">
                   <span>Number</span>
                 </Tooltip>
               </Styled.th>
@@ -174,7 +185,7 @@ const ProjectSidebar = ({
                 </Tooltip>
               </Styled.th>
               <Styled.th sx={{ ...style.th, ...style.number }}>
-                <Tooltip content="Compactness score">
+                <Tooltip content="Compactness score (Polsby-Popper)">
                   <span>Comp.</span>
                 </Tooltip>
               </Styled.th>
@@ -219,26 +230,51 @@ const SidebarHeader = ({
         </Flex>
       ) : areAnyGeoUnitsSelected(selectedGeounits) ? (
         <Flex sx={{ variant: "header.right" }}>
-          <Button
-            variant="circularSubtle"
-            sx={{ mr: "2" }}
-            onClick={() => {
-              store.dispatch(clearSelectedGeounits());
-            }}
+          <Tooltip
+            placement="top-start"
+            content={
+              <span>
+                <strong>Cancel changes</strong> to revert to your previously saved map
+              </span>
+            }
           >
-            Cancel
-          </Button>
-          <Button
-            variant="circular"
-            onClick={() => {
-              store.dispatch(updateDistrictsDefinition());
-            }}
+            <Button
+              variant="circularSubtle"
+              sx={{ mr: "2" }}
+              onClick={() => {
+                store.dispatch(clearSelectedGeounits());
+              }}
+            >
+              Cancel
+            </Button>
+          </Tooltip>
+          <Tooltip
+            placement="top-start"
+            content={
+              <span>
+                <strong>Accept changes</strong> to save your map
+              </span>
+            }
           >
-            <Icon name="check" />
-            Accept
-          </Button>
+            <Button
+              variant="circular"
+              onClick={() => {
+                store.dispatch(updateDistrictsDefinition());
+              }}
+            >
+              <Icon name="check" />
+              Accept
+            </Button>
+          </Tooltip>
         </Flex>
-      ) : null}
+      ) : (
+        <Tooltip placement="top-start" content={<span>Your map is saved</span>}>
+          <Flex sx={{ display: "flex", color: "gray.3", alignItems: "center", userSelect: "none" }}>
+            <Icon name="check-circle" size={1.1} />
+            <Text sx={{ fontSize: 1, ml: 1 }}>Saved</Text>
+          </Flex>
+        </Tooltip>
+      )}
     </Flex>
   );
 };

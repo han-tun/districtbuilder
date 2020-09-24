@@ -103,6 +103,7 @@ const ProjectScreen = ({
           highlightedGeounits={districtDrawing.highlightedGeounits}
           geoUnitHierarchy={geoUnitHierarchy}
           lockedDistricts={districtDrawing.lockedDistricts}
+          saving={districtDrawing.saving}
         />
         <Flex sx={{ flexDirection: "column", flex: 1, background: "#fff" }}>
           <MapHeader

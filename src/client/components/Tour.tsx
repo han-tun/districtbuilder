@@ -65,9 +65,10 @@ class Tour extends Component<Props, State> {
             }
           },
           showProgress: false,
-          placement: "center",
+          placement: "top-end",
           disableBeacon: true,
-          target: "body",
+          target: "#tour-start",
+          disableOverlay: true,
           styles: {
             options: {
               width: 300
